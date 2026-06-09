@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistem Perpustakaan Buku</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #687582;
+      --line: #d9e0e7;
+      --accent: #256f6f;
+      --accent-dark: #194f4f;
+      --warn: #a45b12;
+      --danger: #b42318;
+      --ok: #1f7a4d;
+      --shadow: 0 14px 28px rgba(31, 41, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topbar {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 210px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .role-switch {
+      display: inline-flex;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #eef2f5;
+    }
+
+    .role-switch button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .role-switch button.active {
+      background: #fff;
+      color: var(--accent-dark);
+      box-shadow: 0 1px 3px rgba(31, 41, 51, 0.12);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 20px 42px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 24px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-head h2 {
+      font-size: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .toolbar {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+
+    .search {
+      max-width: 310px;
+      flex: 1 1 230px;
+    }
+
+    button {
+      min-height: 40px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary:hover { background: var(--accent-dark); }
+
+    .secondary {
+      background: #eef2f5;
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .danger {
+      background: #fff0ed;
+      border-color: #fac5bd;
+      color: var(--danger);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      background: #fafbfc;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .actions button {
+      min-height: 34px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status.ok {
+      background: #e9f7ef;
+      color: var(--ok);
+    }
+
+    .status.warn {
+      background: #fff4df;
+      color: var(--warn);
+    }
+
+    .status.done {
+      background: #edf1f5;
+      color: #53616e;
+    }
+
+    .side {
+      display: grid;
+      gap: 18px;
+    }
+
+    form {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .hidden { display: none !important; }
+
+    .empty {
+      padding: 24px 16px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .notice {
+      margin: 0 16px 16px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: #eef8f8;
+      color: var(--accent-dark);
+      border: 1px solid #cbe5e5;
+      font-size: 14px;
+    }
+
+    .history-list {
+      padding: 12px 16px 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .history-item strong { font-size: 14px; }
+    .history-item span { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 920px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .layout { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      main { padding: 16px 12px 32px; }
+      .summary { grid-template-columns: 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .form-grid { grid-template-columns: 1fr; }
+      .role-switch { width: 100%; }
+      .role-switch button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">LB</div>
+        <div>
+          <h1>Sistem Perpustakaan Buku</h1>
+          <p class="subtitle">Manajemen buku, peminjaman, pengembalian, dan denda.</p>
+        </div>
+      </div>
+      <div class="role-switch" aria-label="Pilih peran">
+        <button id="adminRole" class="active" type="button">Admin</button>
+        <button id="memberRole" type="button">Anggota</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary" aria-label="Ringkasan perpustakaan">
+      <div class="metric"><span>Total Buku</span><strong id="metricBooks">0</strong></div>
+      <div class="metric"><span>Total Stok</span><strong id="metricStock">0</strong></div>
+      <div class="metric"><span>Sedang Dipinjam</span><strong id="metricBorrowed">0</strong></div>
+      <div class="metric"><span>Total Denda</span><strong id="metricFine">Rp0</strong></div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="mainTitle">Daftar Buku</h2>
+          <div class="tabs">
+            <button class="tab active" data-view="books" type="button">Buku</button>
+            <button class="tab" data-view="loans" type="button">Peminjaman</button>
+            <button class="tab" data-view="returns" type="button">Pengembalian</button>
+          </div>
+        </div>
+
+        <div id="bookView">
+          <div class="toolbar">
+            <input id="searchBook" class="search" type="search" placeholder="Cari judul atau penulis">
+            <select id="categoryFilter" class="search" aria-label="Filter kategori">
+              <option value="">Semua kategori</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Judul</th>
+                  <th>Penulis</th>
+                  <th>Penerbit</th>
+                  <th>Tahun</th>
+                  <th>Kategori</th>
+                  <th>Stok</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="bookRows"></tbody>
+            </table>
+          </div>
+          <p id="emptyBooks" class="empty hidden">Tidak ada buku yang cocok.</p>
+        </div>
+
+        <div id="loanView" class="hidden">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Anggota</th>
+                  <th>Buku</th>
+                  <th>Tanggal Pinjam</th>
+                  <th>Jatuh Tempo</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="loanRows"></tbody>
+            </table>
+          </div>
+          <p id="emptyLoans" class="empty hidden">Belum ada transaksi peminjaman.</p>
+        </div>
+
+        <div id="returnView" class="hidden">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Peminjaman</th>
+                  <th>Tanggal Kembali</th>
+                  <th>Terlambat</th>
+                  <th>Denda</th>
+                </tr>
+              </thead>
+              <tbody id="returnRows"></tbody>
+            </table>
+          </div>
+          <p id="emptyReturns" class="empty hidden">Belum ada pengembalian.</p>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div id="adminPanel" class="panel">
+          <div class="panel-head">
+            <h2 id="bookFormTitle">Tambah Buku</h2>
+          </div>
+          <form id="bookForm">
+            <input id="bookId" type="hidden">
+            <label>Judul
+              <input id="judul" required maxlength="80">
+            </label>
+            <label>Penulis
+              <input id="penulis" required maxlength="70">
+            </label>
+            <label>Penerbit
+              <input id="penerbit" required maxlength="70">
+            </label>
+            <div class="form-grid">
+              <label>Tahun Terbit
+                <input id="tahun" type="number" min="1900" max="2100" required>
+              </label>
+              <label>Stok
+                <input id="stok" type="number" min="0" required>
+              </label>
+            </div>
+            <label>Kategori
+              <input id="kategori" required maxlength="50">
+            </label>
+            <button class="primary" type="submit">Simpan Buku</button>
+            <button id="cancelEdit" class="secondary hidden" type="button">Batal Edit</button>
+          </form>
+          <p class="notice">Mode admin dapat menambah, mengubah, menghapus, serta memverifikasi pengembalian.</p>
+        </div>
+
+        <div id="memberPanel" class="panel hidden">
+          <div class="panel-head">
+            <h2>Pinjam Buku</h2>
+          </div>
+          <form id="loanForm">
+            <label>Anggota
+              <select id="memberSelect"></select>
+            </label>
+            <label>Buku Tersedia
+              <select id="bookSelect"></select>
+            </label>
+            <label>Tanggal Pinjam
+              <input id="tanggalPinjam" type="date" required>
+            </label>
+            <label>Tanggal Jatuh Tempo
+              <input id="tanggalTempo" type="date" required>
+            </label>
+            <button class="primary" type="submit">Pinjam Buku</button>
+          </form>
+          <div class="panel-head">
+            <h2>Riwayat Anggota</h2>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const finePerDay = 1000;
+    const members = [
+      { id_anggota: 'A001', nama: 'Nadia Putri' },
+      { id_anggota: 'A002', nama: 'Raka Pratama' },
+      { id_anggota: 'A003', nama: 'Sinta Lestari' }
+    ];
+
+    let activeRole = 'admin';
+    let activeView = 'books';
+    let books = [
+      { id_buku: 1, judul: 'Algoritma dan Pemrograman', penulis: 'Rinaldi Munir', penerbit: 'Informatika', tahun_terbit: 2021, kategori: 'Teknologi', stok: 4 },
+      { id_buku: 2, judul: 'Basis Data Modern', penulis: 'Fathansyah', penerbit: 'Andi', tahun_terbit: 2020, kategori: 'Teknologi', stok: 2 },
+      { id_buku: 3, judul: 'Manajemen Pendidikan', penulis: 'Mulyasa', penerbit: 'Remaja Rosdakarya', tahun_terbit: 2019, kategori: 'Pendidikan', stok: 3 },
+      { id_buku: 4, judul: 'Laskar Pelangi', penulis: 'Andrea Hirata', penerbit: 'Bentang Pustaka', tahun_terbit: 2005, kategori: 'Novel', stok: 1 }
+    ];
+    let loans = [
+      { id_peminjaman: 1, id_anggota: 'A001', id_buku: 2, tanggal_pinjam: '2026-06-01', tanggal_jatuh_tempo: '2026-06-08', status: 'Dipinjam' }
+    ];
+    let returns = [];
+
+    const rupiah = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+    const byId = id => document.getElementById(id);
+    const nextId = items => items.length ? Math.max(...items.map(item => Number(Object.values(item)[0]))) + 1 : 1;
+    const getBook = id => books.find(book => book.id_buku === Number(id));
+    const getMember = id => members.find(member => member.id_anggota === id);
+    const dayDiff = (start, end) => Math.max(0, Math.ceil((new Date(end) - new Date(start)) / 86400000));
+
+    function renderMetrics() {
+      byId('metricBooks').textContent = books.length;
+      byId('metricStock').textContent = books.reduce((sum, book) => sum + Number(book.stok), 0);
+      byId('metricBorrowed').textContent = loans.filter(loan => loan.status === 'Dipinjam').length;
+      byId('metricFine').textContent = rupiah(returns.reduce((sum, item) => sum + item.total_denda, 0));
+    }
+
+    function renderCategories() {
+      const select = byId('categoryFilter');
+      const current = select.value;
+      const categories = [...new Set(books.map(book => book.kategori))].sort();
+      select.innerHTML = '<option value="">Semua kategori</option>' + categories.map(category => `<option value="${category}">${category}</option>`).join('');
+      select.value = categories.includes(current) ? current : '';
+    }
+
+    function renderBooks() {
+      const query = byId('searchBook').value.trim().toLowerCase();
+      const category = byId('categoryFilter').value;
+      const rows = books.filter(book => {
+        const matchesSearch = book.judul.toLowerCase().includes(query) || book.penulis.toLowerCase().includes(query);
+        return matchesSearch && (!category || book.kategori === category);
+      });
+
+      byId('bookRows').innerHTML = rows.map(book => `
+        <tr>
+          <td><strong>${book.judul}</strong></td>
+          <td>${book.penulis}</td>
+          <td>${book.penerbit}</td>
+          <td>${book.tahun_terbit}</td>
+          <td>${book.kategori}</td>
+          <td><span class="status ${book.stok > 0 ? 'ok' : 'warn'}">${book.stok} tersedia</span></td>
+          <td>
+            <div class="actions">
+              ${activeRole === 'admin' ? `<button class="secondary" type="button" onclick="editBook(${book.id_buku})">Edit</button><button class="danger" type="button" onclick="deleteBook(${book.id_buku})">Hapus</button>` : `<button class="secondary" type="button" onclick="quickBorrow(${book.id_buku})" ${book.stok <= 0 ? 'disabled' : ''}>Pinjam</button>`}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      byId('emptyBooks').classList.toggle('hidden', rows.length > 0);
+    }
+
+    function renderLoans() {
+      byId('loanRows').innerHTML = loans.map(loan => {
+        const book = getBook(loan.id_buku);
+        const member = getMember(loan.id_anggota);
+        const open = loan.status === 'Dipinjam';
+        return `
+          <tr>
+            <td>PMJ-${String(loan.id_peminjaman).padStart(3, '0')}</td>
+            <td>${member ? member.nama : loan.id_anggota}</td>
+            <td>${book ? book.judul : 'Buku dihapus'}</td>
+            <td>${loan.tanggal_pinjam}</td>
+            <td>${loan.tanggal_jatuh_tempo}</td>
+            <td><span class="status ${open ? 'warn' : 'done'}">${loan.status}</span></td>
+            <td>
+              <div class="actions">
+                ${activeRole === 'admin' && open ? `<button class="primary" type="button" onclick="returnBook(${loan.id_peminjaman})">Kembalikan</button>` : '-'}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      byId('emptyLoans').classList.toggle('hidden', loans.length > 0);
+    }
+
+    function renderReturns() {
+      byId('returnRows').innerHTML = returns.map(item => `
+        <tr>
+          <td>PNG-${String(item.id_pengembalian).padStart(3, '0')}</td>
+          <td>PMJ-${String(item.id_peminjaman).padStart(3, '0')}</td>
+          <td>${item.tanggal_kembali}</td>
+          <td>${item.jumlah_hari_terlambat} hari</td>
+          <td>${rupiah(item.total_denda)}</td>
+        </tr>
+      `).join('');
+      byId('emptyReturns').classList.toggle('hidden', returns.length > 0);
+    }
+
+    function renderLoanForm() {
+      byId('memberSelect').innerHTML = members.map(member => `<option value="${member.id_anggota}">${member.nama}</option>`).join('');
+      const available = books.filter(book => book.stok > 0);
+      byId('bookSelect').innerHTML = available.length
+        ? available.map(book => `<option value="${book.id_buku}">${book.judul} (${book.stok})</option>`).join('')
+        : '<option value="">Tidak ada stok tersedia</option>';
+      byId('loanForm').querySelector('button').disabled = available.length === 0;
+    }
+
+    function renderHistory() {
+      const memberId = byId('memberSelect').value;
+      const items = loans.filter(loan => loan.id_anggota === memberId);
+      byId('historyList').innerHTML = items.length ? items.map(loan => {
+        const book = getBook(loan.id_buku);
+        return `<div class="history-item"><strong>${book ? book.judul : 'Buku dihapus'}</strong><span>${loan.tanggal_pinjam} sampai ${loan.tanggal_jatuh_tempo}</span><span>Status: ${loan.status}</span></div>`;
+      }).join('') : '<p class="empty">Belum ada riwayat untuk anggota ini.</p>';
+    }
+
+    function renderView() {
+      byId('bookView').classList.toggle('hidden', activeView !== 'books');
+      byId('loanView').classList.toggle('hidden', activeView !== 'loans');
+      byId('returnView').classList.toggle('hidden', activeView !== 'returns');
+      byId('mainTitle').textContent = activeView === 'books' ? 'Daftar Buku' : activeView === 'loans' ? 'Data Peminjaman' : 'Data Pengembalian';
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.view === activeView));
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderCategories();
+      renderBooks();
+      renderLoans();
+      renderReturns();
+      renderLoanForm();
+      renderHistory();
+      renderView();
+    }
+
+    function setRole(role) {
+      activeRole = role;
+      byId('adminRole').classList.toggle('active', role === 'admin');
+      byId('memberRole').classList.toggle('active', role === 'anggota');
+      byId('adminPanel').classList.toggle('hidden', role !== 'admin');
+      byId('memberPanel').classList.toggle('hidden', role !== 'anggota');
+      renderAll();
+    }
+
+    function resetBookForm() {
+      byId('bookForm').reset();
+      byId('bookId').value = '';
+      byId('bookFormTitle').textContent = 'Tambah Buku';
+      byId('cancelEdit').classList.add('hidden');
+    }
+
+    function editBook(id) {
+      const book = getBook(id);
+      if (!book) return;
+      byId('bookId').value = book.id_buku;
+      byId('judul').value = book.judul;
+      byId('penulis').value = book.penulis;
+      byId('penerbit').value = book.penerbit;
+      byId('tahun').value = book.tahun_terbit;
+      byId('kategori').value = book.kategori;
+      byId('stok').value = book.stok;
+      byId('bookFormTitle').textContent = 'Edit Buku';
+      byId('cancelEdit').classList.remove('hidden');
+    }
+
+    function deleteBook(id) {
+      const hasOpenLoan = loans.some(loan => loan.id_buku === id && loan.status === 'Dipinjam');
+      if (hasOpenLoan) {
+        alert('Buku masih memiliki peminjaman aktif.');
+        return;
+      }
+      books = books.filter(book => book.id_buku !== id);
+      resetBookForm();
+      renderAll();
+    }
+
+    function quickBorrow(id) {
+      setRole('anggota');
+      byId('bookSelect').value = String(id);
+      activeView = 'books';
+      renderView();
+    }
+
+    function returnBook(id) {
+      const loan = loans.find(item => item.id_peminjaman === id);
+      if (!loan || loan.status !== 'Dipinjam') return;
+      const today = new Date().toISOString().slice(0, 10);
+      const returnDate = prompt('Tanggal kembali (YYYY-MM-DD)', today);
+      if (!returnDate) return;
+      const lateDays = dayDiff(loan.tanggal_jatuh_tempo, returnDate);
+      const fine = lateDays * finePerDay;
+      loan.status = 'Dikembalikan';
+      returns.push({
+        id_pengembalian: nextId(returns),
+        id_peminjaman: loan.id_peminjaman,
+        tanggal_kembali: returnDate,
+        jumlah_hari_terlambat: lateDays,
+        total_denda: fine
+      });
+      const book = getBook(loan.id_buku);
+      if (book) book.stok += 1;
+      activeView = 'returns';
+      renderAll();
+      alert(lateDays > 0 ? `Denda: ${rupiah(fine)}` : 'Pengembalian tepat waktu, tidak ada denda.');
+    }
+
+    byId('bookForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const id = byId('bookId').value;
+      const payload = {
+        judul: byId('judul').value.trim(),
+        penulis: byId('penulis').value.trim(),
+        penerbit: byId('penerbit').value.trim(),
+        tahun_terbit: Number(byId('tahun').value),
+        kategori: byId('kategori').value.trim(),
+        stok: Number(byId('stok').value)
+      };
+      if (id) {
+        const index = books.findIndex(book => book.id_buku === Number(id));
+        books[index] = { id_buku: Number(id), ...payload };
+      } else {
+        books.push({ id_buku: nextId(books), ...payload });
+      }
+      resetBookForm();
+      renderAll();
+    });
+
+    byId('loanForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const book = getBook(byId('bookSelect').value);
+      if (!book || book.stok <= 0) {
+        alert('Stok buku tidak tersedia.');
+        return;
+      }
+      loans.push({
+        id_peminjaman: nextId(loans),
+        id_anggota: byId('memberSelect').value,
+        id_buku: book.id_buku,
+        tanggal_pinjam: byId('tanggalPinjam').value,
+        tanggal_jatuh_tempo: byId('tanggalTempo').value,
+        status: 'Dipinjam'
+      });
+      book.stok -= 1;
+      activeView = 'loans';
+      renderAll();
+    });
+
+    byId('cancelEdit').addEventListener('click', resetBookForm);
+    byId('searchBook').addEventListener('input', renderBooks);
+    byId('categoryFilter').addEventListener('change', renderBooks);
+    byId('memberSelect').addEventListener('change', renderHistory);
+    byId('adminRole').addEventListener('click', () => setRole('admin'));
+    byId('memberRole').addEventListener('click', () => setRole('anggota'));
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+      activeView = tab.dataset.view;
+      renderView();
+    }));
+
+    const today = new Date();
+    const due = new Date(today);
+    due.setDate(today.getDate() + 7);
+    byId('tanggalPinjam').value = today.toISOString().slice(0, 10);
+    byId('tanggalTempo').value = due.toISOString().slice(0, 10);
+    renderAll();
+  </script>
+</body>
+</html>
